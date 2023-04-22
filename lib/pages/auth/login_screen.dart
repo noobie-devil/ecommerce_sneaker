@@ -34,12 +34,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 20, MediaQuery.of(context).size.height * 0.2, 20, 0),
             child: Column(
               children: <Widget>[
-                Image.network(
-                  'https://firebasestorage.googleapis.com/v0/b/sneakerstore-ec4f7.appspot.com/o/splashscreen-removebg.png?alt=media&token=6a9418ca-8eb3-4cad-a664-44573a008a97',
+                Image.asset(
+                  "assets/splashscreen.png",
                   fit: BoxFit.fitWidth,
                   width: 300,
                   height: 300,
                 ),
+                // Image.network(
+                //   'https://firebasestorage.googleapis.com/v0/b/sneakerstore-ec4f7.appspot.com/o/splashscreen-removebg.png?alt=media&token=6a9418ca-8eb3-4cad-a664-44573a008a97',
+                //   fit: BoxFit.fitWidth,
+                //   width: 300,
+                //   height: 300,
+                // ),
                 const SizedBox(
                   height: 30,
                 ),
@@ -60,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       email: _emailTextController.text,
                       password: _passwordTextController.text)
                       .then((value) {
-                        print(value);
+                    print(value);
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => HomePage()));
                   }).onError((error, stackTrace) {
@@ -100,12 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
       height: 35,
       alignment: Alignment.bottomRight,
       child: TextButton(
-        child: const Text(
-          "Forgot Password?",
-          style: TextStyle(color: Colors.white70),
-          textAlign: TextAlign.right,
-        ),
-        onPressed: () {}
+          child: const Text(
+            "Forgot Password?",
+            style: TextStyle(color: Colors.white70),
+            textAlign: TextAlign.right,
+          ),
+          onPressed: () {}
         // Navigator.push(
         //     context, MaterialPageRoute(builder: (context) => ResetPassword())
         // ),

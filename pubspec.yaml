@@ -42,11 +42,13 @@ dependencies:
   cached_network_image: ^3.2.3
   auto_animated: ^3.1.0
   google_fonts: ^4.0.3
-  firebase_core: ^2.10.0
+  firebase_core: ^2.9.0
   firebase_auth: ^4.4.2
   cloud_firestore: ^4.4.3
   google_nav_bar: ^5.0.6
   auto_size_text: ^3.0.0
+  badges: ^3.1.1
+  rxdart: ^0.27.7
 
 
 dev_dependencies:

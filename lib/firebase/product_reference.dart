@@ -1,4 +1,4 @@
-import 'package:ecommerce_sneaker/models/product_model.dart';
+import 'package:ecommerce_sneaker/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<List<Product>> getProductList() async {

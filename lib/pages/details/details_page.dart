@@ -1,32 +1,27 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_sneaker/constants/colors.dart';
+import 'package:ecommerce_sneaker/controllers/cart_controller.dart';
 import 'package:ecommerce_sneaker/controllers/product_detail_controller.dart';
-import 'package:ecommerce_sneaker/models/product_model.dart';
+import 'package:ecommerce_sneaker/models/models.dart';
 import 'package:ecommerce_sneaker/widgets/bottom_sheet.dart';
 import 'package:ecommerce_sneaker/widgets/common/shake_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-
+import 'package:badges/badges.dart' as badges;
 import '../../constants/fonts.dart';
+import '../../widgets/common/fast_cart_widget.dart';
 
 class DetailsPage extends StatelessWidget {
-  const DetailsPage({Key? key, required this.product}) : super(key: key);
+  DetailsPage({Key? key, required this.product}) : super(key: key);
   final Product product;
-  // final ProductDetailController controller = Get.put(ProductDetailController(), permanent: false);
-  // int _selectedIndex = 0;
-  // int? _value;
-
-  // List<Color> colors = [
-  //   Color(0xff29695D),
-  //   Color(0xff5B8EA3),
-  //   Color(0xff746A36),
-  //   Color(0xff2E2E2E)
-  // ];
+  final ProductDetailController productDetailController = Get.put(ProductDetailController(), permanent: false);
+  final CartController cartController = Get.put(CartController());
 
   @override
   Widget build(BuildContext context) {
+    productDetailController.updateProduct(product);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -39,13 +34,51 @@ class DetailsPage extends StatelessWidget {
         ),
         elevation: 0,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.more_horiz,
-              size: 30,
+          GestureDetector(
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FastCart(),
+                )),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Center(
+                child: badges.Badge(
+                  showBadge: true,
+                  ignorePointer: false,
+                  onTap: (){},
+                  badgeContent: Obx(() => AutoSizeText(
+                      cartController.cartTotalQuantity.toString(),
+                      style: const TextStyle(
+                          color: Colors.white
+                      ),
+                    ),
+                  ),
+                  badgeAnimation: const badges.BadgeAnimation.slide(
+                    animationDuration: Duration(milliseconds: 500),
+                    colorChangeAnimationDuration: Duration(milliseconds: 500),
+                    loopAnimation: false,
+                    curve: Curves.fastOutSlowIn,
+                    colorChangeAnimationCurve: Curves.easeInCubic,
+                  ),
+                  badgeStyle: const badges.BadgeStyle(
+                      shape: badges.BadgeShape.circle,
+                      badgeColor: Colors.redAccent,
+                      elevation: 0
+                  ),
+                  child: const FaIcon(FontAwesomeIcons.cartShopping, color: Colors.white,),
+                ),
+              ),
             ),
           )
+
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(
+          //     Icons.more_horiz,
+          //     size: 30,
+          //   ),
+          // )
         ],
       ),
       body: SafeArea(
@@ -183,13 +216,14 @@ class DetailsPage extends StatelessWidget {
                                 children: [
                                   ElevatedButton.icon(
                                     onPressed: () {
-                                      showModalBottomSheet(
+                                      Future<void> future = showModalBottomSheet(
                                           backgroundColor: Colors.transparent,
                                           context: context,
                                           builder: (context) {
-                                            return CustomBottomSheet();
-                                          }
+                                            return CustomBottomSheet(productDetailController: productDetailController,);
+                                          },
                                       );
+                                      future.then((value) => productDetailController.onClose());
                                     },
                                     icon: const FaIcon(FontAwesomeIcons.cartPlus,
                                         size: 15),
@@ -251,220 +285,7 @@ class DetailsPage extends StatelessWidget {
               ],
             ),
           )
-        // child: Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     Expanded(
-        //       child: Container(
-        //         margin: const EdgeInsets.only(left: 12),
-        //         width: double.infinity,
-        //         decoration: BoxDecoration(
-        //             color: Colors.grey.shade300,
-        //             borderRadius: BorderRadius.circular(20)),
-        //         child: Center(
-        //           child: Stack(
-        //             alignment: Alignment.center,
-        //             children: [
-        //               ShakeTransition(
-        //                 child: Image.asset(
-        //                   "assets/nike_brand.png",
-        //                   color: const Color.fromRGBO(0, 0, 0, 0.2),
-        //                 ),
-        //               ),
-        //               PageView.builder(
-        //                 itemCount: 3,
-        //                 itemBuilder: (context, index) {
-        //                   return Center(
-        //                       child: ShakeTransition(
-        //                           child: Image.asset("assets/shoes_1.png")));
-        //                 },
-        //               )
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //     Expanded(
-        //       child: Padding(
-        //         padding: const EdgeInsets.symmetric(horizontal: 35),
-        //         child: Column(
-        //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //           crossAxisAlignment: CrossAxisAlignment.stretch,
-        //           children: [
-        //             ShakeTransition(
-        //               child: Column(
-        //                 crossAxisAlignment: CrossAxisAlignment.stretch,
-        //                 children: const [
-        //                   Text(
-        //                     "Air - Max Pre Day",
-        //                     style: TextStyle(
-        //                         fontSize: 25,
-        //                         letterSpacing: 0.25,
-        //                         fontFamily: gilroySemibold),
-        //                   ),
-        //                   SizedBox(
-        //                     height: 12,
-        //                   ),
-        //                   Text(
-        //                     "\$${239.8}",
-        //                     style: TextStyle(
-        //                         fontSize: 18,
-        //                         letterSpacing: 0.25,
-        //                         color: Color.fromRGBO(0, 0, 0, 0.6),
-        //                       fontFamily: gilroySemibold
-        //                     ),
-        //                   )
-        //                 ],
-        //               ),
-        //             ),
-        //             const ShakeTransition(
-        //               axis: Axis.vertical,
-        //               child: Text(
-        //                 "Description here",
-        //                 style: TextStyle(
-        //                   fontSize: 15,
-        //                   fontFamily: gilroySemibold,
-        //                   letterSpacing: 0.25,
-        //                   color: Color.fromRGBO(0, 0, 0, 0.4)
-        //                 ),
-        //               ),
-        //             ),
-        //             SizedBox(
-        //               height: 38,
-        //               child: Row(
-        //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                 children: [
-        //                   ListView.builder(
-        //                     shrinkWrap: true,
-        //                     primary: false,
-        //                     scrollDirection: Axis.horizontal,
-        //                     itemCount: colors.length,
-        //                     itemBuilder: (context, index) {
-        //                       return ShakeTransition(
-        //                         duration: const Duration(milliseconds: 1100),
-        //                         child: Padding(
-        //                           padding: const EdgeInsets.only(right: 5),
-        //                           child: GestureDetector(
-        //                             onTap: () {
-        //                               setState(() {
-        //                                 _selectedIndex = index;
-        //                               });
-        //                             },
-        //                             child: CircleAvatar(
-        //                               backgroundColor: colors[index],
-        //                               child: Center(
-        //                                 child: _selectedIndex == index ? const Icon(Icons.check, color: Colors.white,) : null,
-        //                               ),
-        //                             ),
-        //                           ),
-        //                         )
-        //                       );
-        //                     },
-        //                   ),
-        //                   ShakeTransition(
-        //                     child: Container(
-        //                       decoration: BoxDecoration(
-        //                         borderRadius: BorderRadius.circular(10.0),
-        //                       ),
-        //                       padding: const EdgeInsets.only(left: 10, right: 10),
-        //                       child: DropdownButtonHideUnderline(
-        //                         child: DropdownButton(
-        //                             value: _value,
-        //                             isExpanded: false,
-        //                             hint: const Text(
-        //                               "Choose size",
-        //                               style: TextStyle(
-        //                                 fontFamily: gilroySemibold,
-        //                                 fontSize: 15,
-        //                                 color: Color.fromRGBO(0, 0, 0, 0.6)
-        //                               ),),
-        //                             items: const [
-        //                               DropdownMenuItem(
-        //                                 value: 1,
-        //                                 child: Text("M 20"),
-        //                               ),
-        //                               DropdownMenuItem(
-        //                                 value: 2,
-        //                                 child: Text("L 16"),
-        //                               ),
-        //                               DropdownMenuItem(
-        //                                 value: 3,
-        //                                 child: Text("M 6"),
-        //                               ),
-        //                               DropdownMenuItem(
-        //                                 value: 4,
-        //                                 child: Text("S 12"),
-        //                               ),
-        //
-        //                             ],
-        //                             onChanged: (value){
-        //                               setState(() {
-        //                                 _value = value ?? 0;
-        //                               });
-        //                             }),
-        //                       ),
-        //                     ),
-        //                   )
-        //                 ],
-        //               ),
-        //             ),
-        //             Row(
-        //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //               children: [
-        //                 ShakeTransition(
-        //                   child: InkWell(
-        //                     onTap: () {},
-        //                     child: Container(
-        //                       decoration: BoxDecoration(
-        //                           color: const Color(0xFFF7F8FA),
-        //                           borderRadius: BorderRadius.circular(30)
-        //                       ),
-        //                       child: const FaIcon(FontAwesomeIcons.cartShopping, size: 22, color: Color(0xFFFD725A),),
-        //                     ),
-        //                   ),
-        //                 ),
-        //                 ShakeTransition(
-        //                   child: InkWell(
-        //                     onTap: () {
-        //                       showModalBottomSheet(
-        //                         backgroundColor: Colors.transparent,
-        //                         context: context,
-        //                         builder: (context) {
-        //                           return CustomBottomSheet();
-        //                         }
-        //                       );
-        //                     },
-        //                     child: Container(
-        //                       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 70),
-        //                       decoration: BoxDecoration(
-        //                           color: const Color(0xFFFD725A),
-        //                           borderRadius: BorderRadius.circular(30)
-        //                       ),
-        //                       child: Text("Buy Now", style: TextStyle(
-        //                         fontSize: 17,
-        //                         fontWeight: FontWeight.w600,
-        //                         letterSpacing: 1,
-        //                         color: Colors.white.withOpacity(0.8)
-        //                       ),),
-        //                     ),
-        //                   ),
-        //                 ),
-        //
-        //               ],
-        //             ),
-        //
-        //
-        //             // const ShakeTransition(
-        //             //   axis: Axis.vertical,
-        //             //   child: ButtonStates(),
-        //             // ),
-        //             const SizedBox(height: 20, )
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
+
       ),
     );
   }

@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+
   final drawerZoomController = ZoomDrawerController();
 
   int _selectedIndex = 0;

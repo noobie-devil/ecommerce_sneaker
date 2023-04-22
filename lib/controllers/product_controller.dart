@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce_sneaker/models/product_model.dart';
+import 'package:ecommerce_sneaker/models/models.dart';
 import 'package:get/get.dart';
 
 class ProductController extends GetxController {

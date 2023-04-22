@@ -1,4 +1,4 @@
-import 'models/product_model.dart';
+import 'models/models.dart';
 
 class Data {
 
