@@ -2,6 +2,7 @@ import 'package:ecommerce_sneaker/pages/home/cart_screen.dart';
 import "package:ecommerce_sneaker/constants/colors.dart";
 import 'package:ecommerce_sneaker/pages/home/shop_screen.dart';
 import "package:ecommerce_sneaker/widgets/common/bottom_nav_bar.dart";
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter_zoom_drawer/config.dart";
 import "package:flutter_zoom_drawer/flutter_zoom_drawer.dart";
@@ -19,6 +20,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        // người dùng chưa đăng nhập
+        print('NOT Auth');
+      } else {
+        // người dùng đã đăng nhập
+        print(user);
+      }
+    });
+  }
+
   final drawerZoomController = ZoomDrawerController();
 
   int _selectedIndex = 0;
