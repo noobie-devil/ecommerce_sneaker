@@ -7,7 +7,7 @@ import 'package:page_transition/page_transition.dart';
 import '../constants/fonts.dart';
 import '../controllers/product_controller.dart';
 import '../pages/details/details_page.dart';
-import '../models/product_model.dart';
+import '../models/models.dart';
 
 class ListProducts extends StatelessWidget {
   ListProducts({Key? key}) : super(key: key);

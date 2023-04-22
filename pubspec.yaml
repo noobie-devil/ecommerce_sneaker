@@ -46,6 +46,8 @@ dependencies:
   cloud_firestore: ^4.4.3
   google_nav_bar: ^5.0.6
   auto_size_text: ^3.0.0
+  badges: ^3.1.1
+  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_test:

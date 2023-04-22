@@ -1,129 +1,166 @@
-import 'package:ecommerce_sneaker/data.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerce_sneaker/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
-import '../models/product_model.dart';
+import '../models/models.dart';
 
 class CartItem extends StatelessWidget {
   // const CartItem({Key? key}) : super(key: key);
+  CartItem(this._cartProduct, {super.key, required this.onQuantityChanged, required this.onSelectChanged});
 
-  List<ProductModel> items = Data.generateProducts();
+  final CartProduct _cartProduct;
+  final Function(String id, int quantity) onQuantityChanged;
+  final Function(CartProduct, bool) onSelectChanged;
 
   @override
   Widget build(BuildContext context) {
+    final ProductController productController = Get.put(ProductController());
+    int indexProduct = productController.productList.indexWhere((element) => element.id == _cartProduct.productId);
+    final Product product = productController.productList[indexProduct];
+    final RxBool isChecked = true.obs;
+    ever(isChecked, (callback) => {
+      onSelectChanged(_cartProduct, isChecked.value)
+    });
+
     return Column(
       children: [
-        for(int i = 0; i < items.length; i++)
-          Container(
-            height: 110,
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            decoration: BoxDecoration(
+        Container(
+          height: 110,
+          // margin: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10)
-            ),
-            child: Row(
-              children: [
-                Checkbox(
-                  value: true,
-                  onChanged: (value) {},
-                  activeColor: Color(0xFFFD725A),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 1,
+                child: Obx(() => Checkbox(
+                    value: isChecked.value,
+                    onChanged: (value) {
+                      isChecked.value = value!;
+                    },
+                    activeColor: const Color(0xFFFD725A),
+                  ),
                 ),
-                Container(
+              ),
+              Expanded(
+                flex: 3,
+                child: Container(
                   height: 70,
                   width: 70,
-                  margin: EdgeInsets.only(right: 15),
+                  margin: const EdgeInsets.only(right: 15),
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 224, 224, 224),
-                    borderRadius: BorderRadius.circular(10)
+                      // color: const Color.fromARGB(255, 224, 224, 224),
+                      borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.shade300, width: 1),
                   ),
-                  child: Image.asset(items[i].image),
+                  child: CachedNetworkImage(imageUrl: product.imagePath),
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        items[i].title,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.7)
+              ),
+              Expanded(
+                flex: 7,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 6,
+                          child: AutoSizeText(
+                            product.productName,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black.withOpacity(0.7)
+                            ),
+                            minFontSize: 16,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "Best Selling",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black.withOpacity(0.6)
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () => {
+                              onQuantityChanged(product.id, 0)
+                            },
+                            color: Colors.redAccent,
+                            icon: const Icon(Icons.delete),
+                          ),
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: AutoSizeText(
+                            "\$${product.price}",
+                            style: const TextStyle(
+                                color: Color(0xFFFD725A),
+                                fontWeight: FontWeight.bold
+                            ),
+                            minFontSize: 16,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "\$${items[i].price}",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFFFD725A),
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
+                        Expanded(
+                          flex: 5,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: () => {
+                                  onQuantityChanged(product.id, _cartProduct.quantity - 1)
+                                },
+                                color: const Color(0xFFF7F8FA),
+                                disabledColor: Colors.black12,
+                                icon: const FaIcon(
+                                  FontAwesomeIcons.minus,
+                                  size: 18,
+                                  color: Color(0xFFFD725A),
+                                ),
 
-                    ],
-                  ),
+                              ),
+                              AutoSizeText(
+                                _cartProduct.quantity.toString(),
+                                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400),
+                              ),
+                              IconButton(
+                                onPressed: () => {
+                                  onQuantityChanged(product.id, _cartProduct.quantity + 1)
+                                },
+                                color: const Color(0xFFF7F8FA),
+                                disabledColor: Colors.black12,
+                                icon: const FaIcon(
+                                  FontAwesomeIcons.plus,
+                                  size: 18,
+                                  color: Color(0xFFFD725A),
+                                ),
+
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-                Spacer(),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.redAccent,
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Color(0xFFF7F8FA),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: FaIcon(
-                              FontAwesomeIcons.minus,
-                              size: 18,
-                              color: Colors.redAccent,
-                            ),
-                          ),
-                          SizedBox(width: 8,),
-                          Text("01", style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w400
-                          ),),
-                          SizedBox(width: 8,),
-                          Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Color(0xFFF7F8FA),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: FaIcon(
-                              FontAwesomeIcons.minus,
-                              size: 18,
-                              color: Colors.redAccent,
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          )
+              )
+
+            ],
+          ),
+        )
       ],
     );
   }
+
 }

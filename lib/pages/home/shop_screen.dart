@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_sneaker/constants/fonts.dart';
 import 'package:ecommerce_sneaker/controllers/product_controller.dart';
-import 'package:ecommerce_sneaker/models/product_model.dart';
+import 'package:ecommerce_sneaker/models/models.dart';
 import 'package:ecommerce_sneaker/widgets/list_products_widget.dart';
 import 'package:ecommerce_sneaker/widgets/search_bar_widget.dart';
 import 'package:ecommerce_sneaker/widgets/shoe_tile_widget.dart';

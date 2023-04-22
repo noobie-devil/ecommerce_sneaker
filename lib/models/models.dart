@@ -51,11 +51,8 @@ class Product {
         price = snapshot.get('price'),
         updatedAt = (snapshot.get('updated_at') as Timestamp).toDate(),
         createdAt = (snapshot.get('created_at') as Timestamp).toDate(),
-        categories =[],
+        categories = [],
         brand = Brand(id: snapshot.get('brand_id'));
-
-
-
 }
 
 class Brand {
@@ -71,9 +68,9 @@ class Brand {
         brandName = map['name'];
 
   Brand.fromSnapshot(DocumentSnapshot snapshot)
-  : id = snapshot.id,
-    brandImage = snapshot.get('image_path'),
-    brandName = snapshot.get('name');
+      : id = snapshot.id,
+        brandImage = snapshot.get('image_path'),
+        brandName = snapshot.get('name');
 }
 
 class Category {
@@ -89,4 +86,33 @@ class Category {
   Category.fromSnapshot(DocumentSnapshot snapshot)
       : id = snapshot.id,
         name = snapshot.get('name');
+}
+
+class Cart {
+  final String uid;
+  final List<CartProduct> cartProducts;
+
+  Cart(this.uid, this.cartProducts);
+
+  Cart.fromSnapshot(DocumentSnapshot snapshot)
+      : uid = snapshot.id,
+        cartProducts = [];
+}
+
+class CartProduct {
+  final String? id;
+  final String productId;
+  final int quantity;
+
+  CartProduct(this.id, this.productId, this.quantity);
+
+  CartProduct.fromSnapshot(DocumentSnapshot snapshot)
+      : id = snapshot.id,
+        productId = snapshot.get("product_id"),
+        quantity = snapshot.get('quantity');
+
+  Map<String, dynamic> toJson() => {
+    'product_id': productId,
+    'quantity': quantity
+  };
 }
