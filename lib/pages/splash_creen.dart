@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             Image(
               image: NetworkImage('https://firebasestorage.googleapis.com/v0/b/sneakerstore-ec4f7.appspot.com/o/splashscreen.png?alt=media&token=6a9418ca-8eb3-4cad-a664-44573a008a97'),
               width: 300,
