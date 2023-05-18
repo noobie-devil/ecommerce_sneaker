@@ -1,9 +1,12 @@
+import 'package:ecommerce_sneaker/pages/adminPage/homeScreen/home.dart';
+import 'package:ecommerce_sneaker/pages/adminPage/homeScreen/test_login.dart';
 import 'package:ecommerce_sneaker/pages/auth/login_screen.dart';
 import 'package:ecommerce_sneaker/pages/home/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ecommerce_sneaker/constants/admin/const.dart';
 
 import 'pages/splash_creen.dart';
 
@@ -31,8 +34,12 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
+        // appBarTheme: AppBarTheme(
+        //   backgroundColor: Colors.transparent,
+        //   elevation: 0.0
+        // )
       ),
-      home: const HomePage(),
+      home: const HomeAdmin(),
       // home: const LoginScreen(),
     );
   }

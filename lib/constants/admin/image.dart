@@ -1,0 +1,3 @@
+const icProduct ="https://firebasestorage.googleapis.com/v0/b/sneakerstore-ec4f7.appspot.com/o/icProduct.png?alt=media&token=7976b798-31c6-4113-8dc8-b00dcb76afcd";
+const icOrder = "https://firebasestorage.googleapis.com/v0/b/sneakerstore-ec4f7.appspot.com/o/clipboard.png?alt=media&token=67a2bcef-ca3a-4d15-a569-8a0dcd9732a5";
+const icGeneralSetting = "https://firebasestorage.googleapis.com/v0/b/sneakerstore-ec4f7.appspot.com/o/icGeneralSetting.png?alt=media&token=2fb554f4-513f-4ead-a107-34bc2f039a85";
