@@ -111,8 +111,77 @@ class CartProduct {
         productId = snapshot.get("product_id"),
         quantity = snapshot.get('quantity');
 
-  Map<String, dynamic> toJson() => {
-    'product_id': productId,
-    'quantity': quantity
-  };
+  Map<String, dynamic> toJson() =>
+      {'product_id': productId, 'quantity': quantity};
+}
+
+class WishListItem {
+  final String? id;
+  final String productId;
+
+  WishListItem(this.id, this.productId);
+
+  WishListItem.fromSnapshot(DocumentSnapshot snapshot)
+      : id = snapshot.id,
+        productId = snapshot.get("product_id");
+
+  Map<String, dynamic> toJson() => {'product_id': productId};
+}
+
+class DeliveryAddress {
+  final String? id;
+  final String fullName;
+  final String phoneNumber;
+  final String address;
+  final bool isDefaultAddress;
+
+  DeliveryAddress(this.id, this.fullName, this.phoneNumber, this.address,
+      this.isDefaultAddress);
+
+  DeliveryAddress.fromSnapshot(DocumentSnapshot snapshot)
+      : id = snapshot.id,
+        fullName = snapshot.get("full_name"),
+        phoneNumber = snapshot.get("phone_number"),
+        address = snapshot.get('address'),
+        isDefaultAddress = snapshot.get("is_default");
+}
+
+class User {
+  final String? uid;
+  final String username;
+  final String email;
+
+  User(this.uid, this.username, this.email);
+
+  User.fromSnapshot(DocumentSnapshot snapshot)
+      : uid = snapshot.id,
+        username = snapshot.get('username'),
+        email = snapshot.get('email');
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'username': username,
+      'email': email,
+    };
+  }
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      json['uid'],
+      json['username'],
+      json['email'],
+    );
+  }
+}
+
+class RegisterRequest {
+  final String username;
+  final String email;
+  final String password;
+
+  RegisterRequest(this.username, this.email, this.password);
+
+  Map<String, dynamic> toJson() =>
+      {'username': username, 'email': email, 'password': password};
 }
