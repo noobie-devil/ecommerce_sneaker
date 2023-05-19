@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ecommerce_sneaker/constants/colors.dart';
 import 'package:ecommerce_sneaker/controllers/cart_controller.dart';
 import 'package:ecommerce_sneaker/controllers/product_detail_controller.dart';
 import 'package:ecommerce_sneaker/models/models.dart';
@@ -38,7 +37,7 @@ class DetailsPage extends StatelessWidget {
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FastCart(),
+                  builder: (context) => const FastCart(),
                 )),
             child: Padding(
               padding: const EdgeInsets.only(right: 8.0),

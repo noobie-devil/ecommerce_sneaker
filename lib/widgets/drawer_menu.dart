@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/config.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 class DrawerMenu extends StatelessWidget {
   const DrawerMenu({Key? key, required this.drawerController}) : super(key: key);

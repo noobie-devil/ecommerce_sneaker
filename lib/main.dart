@@ -1,18 +1,11 @@
-import 'package:ecommerce_sneaker/pages/adminPage/homeScreen/home.dart';
-import 'package:ecommerce_sneaker/pages/adminPage/homeScreen/test_login.dart';
 import 'package:ecommerce_sneaker/pages/auth/login_screen.dart';
 import 'package:ecommerce_sneaker/pages/home/home_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:ecommerce_sneaker/constants/admin/const.dart';
 
-import 'pages/splash_creen.dart';
-
-import 'constants/strings.dart';
-//Thanh
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'controllers/sign_in_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,18 +22,29 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final SignInController signInController = Get.put(SignInController());
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
-        // appBarTheme: AppBarTheme(
-        //   backgroundColor: Colors.transparent,
-        //   elevation: 0.0
-        // )
       ),
-      home: const HomeAdmin(),
-      // home: const LoginScreen(),
+      // home: const HomePage(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          print("authStateChanges with snapshot: ${snapshot.data}");
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          if (snapshot.hasData && signInController.isSignedIn.isTrue) {
+            return HomePage();
+          } else {
+            return LoginScreen(signInController: signInController,);
+          }
+        },
+      ),
     );
   }
 }

@@ -1,18 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:ecommerce_sneaker/controllers/cart_controller.dart';
 import 'package:ecommerce_sneaker/controllers/product_detail_controller.dart';
-import 'package:ecommerce_sneaker/pages/home/cart_screen.dart';
 import 'package:ecommerce_sneaker/constants/fonts.dart';
-import 'package:ecommerce_sneaker/widgets/common/fast_cart_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class CustomBottomSheet extends StatelessWidget {
 
-  CustomBottomSheet({super.key, required this.productDetailController});
+  const CustomBottomSheet({super.key, required this.productDetailController, this.addToCartCallback});
 
   final ProductDetailController productDetailController;
+
+  final Function()? addToCartCallback;
 
   // const CustomBottomSheet({Key? key}) : super(key: key);
 
@@ -210,9 +210,17 @@ class CustomBottomSheet extends StatelessWidget {
           ),
           Obx(
             () => ElevatedButton(
-                onPressed: !productDetailController.enableButton.value ? null : () {
+                onPressed: !productDetailController.enableButton.value ? null : () async {
                   Navigator.pop(context);
-                  cartController.updateCartProduct(productDetailController.product.id, productDetailController.selectedQuantity.value);
+                  // cartController.updateCartProduct(productDetailController.product.id, productDetailController.selectedQuantity.value);
+                  final result = await cartController.updateCartProductGetResult(productDetailController.product.id, productDetailController.selectedQuantity.value);
+                  print("result: $result");
+                  if(result && addToCartCallback != null) {
+                    print("addToCartCallback");
+                    addToCartCallback!();
+                  } else {
+                    print("fail to callback after add to cart");
+                  }
                 },
                 // Navigator.push(
                 //     context,

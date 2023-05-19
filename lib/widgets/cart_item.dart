@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerce_sneaker/controllers/cart_controller.dart';
 import 'package:ecommerce_sneaker/controllers/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,9 +10,10 @@ import '../models/models.dart';
 
 class CartItem extends StatelessWidget {
   // const CartItem({Key? key}) : super(key: key);
-  CartItem(this._cartProduct, {super.key, required this.onQuantityChanged, required this.onSelectChanged});
+  const CartItem(this._cartProduct, {super.key, required this.onQuantityChanged, required this.onSelectChanged, required this.cartController});
 
   final CartProduct _cartProduct;
+  final CartController cartController;
   final Function(String id, int quantity) onQuantityChanged;
   final Function(CartProduct, bool) onSelectChanged;
 
@@ -20,9 +22,10 @@ class CartItem extends StatelessWidget {
     final ProductController productController = Get.put(ProductController());
     int indexProduct = productController.productList.indexWhere((element) => element.id == _cartProduct.productId);
     final Product product = productController.productList[indexProduct];
-    final RxBool isChecked = true.obs;
-    ever(isChecked, (callback) => {
-      onSelectChanged(_cartProduct, isChecked.value)
+    final RxBool isChecked = (cartController.cartCheckedItemObservable.indexWhere((element) => element.productId == _cartProduct.productId) != -1).obs;
+    ever(isChecked, (callback) {
+      print("isChecked callback trigger");
+      onSelectChanged(_cartProduct, isChecked.value);
     });
 
     return Column(
@@ -42,7 +45,7 @@ class CartItem extends StatelessWidget {
               Expanded(
                 flex: 1,
                 child: Obx(() => Checkbox(
-                    value: isChecked.value,
+                    value: isChecked.value,//isChecked.value,
                     onChanged: (value) {
                       isChecked.value = value!;
                     },
@@ -89,8 +92,9 @@ class CartItem extends StatelessWidget {
                         Expanded(
                           flex: 1,
                           child: IconButton(
-                            onPressed: () => {
-                              onQuantityChanged(product.id, 0)
+                            onPressed: () {
+                              onQuantityChanged(product.id, -_cartProduct.quantity);
+                              // isChecked.value = (cartController.cartCheckedItemObservable.indexWhere((element) => element.productId == _cartProduct.productId) != -1);
                             },
                             color: Colors.redAccent,
                             icon: const Icon(Icons.delete),
@@ -119,7 +123,7 @@ class CartItem extends StatelessWidget {
                             children: [
                               IconButton(
                                 onPressed: () => {
-                                  onQuantityChanged(product.id, _cartProduct.quantity - 1)
+                                  onQuantityChanged(product.id, -1)
                                 },
                                 color: const Color(0xFFF7F8FA),
                                 disabledColor: Colors.black12,
@@ -135,8 +139,10 @@ class CartItem extends StatelessWidget {
                                 style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w400),
                               ),
                               IconButton(
-                                onPressed: () => {
-                                  onQuantityChanged(product.id, _cartProduct.quantity + 1)
+                                onPressed: () {
+                                  onQuantityChanged(product.id, 1);
+                                  // isChecked.value = (cartController.cartCheckedItemObservable.indexWhere((element) => element.productId == _cartProduct.productId) != -1);
+
                                 },
                                 color: const Color(0xFFF7F8FA),
                                 disabledColor: Colors.black12,
