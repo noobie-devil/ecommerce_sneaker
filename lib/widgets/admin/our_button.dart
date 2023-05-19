@@ -1,12 +1,13 @@
 import 'package:ecommerce_sneaker/constants/admin/const.dart';
 import 'text_style.dart';
-Widget outButton({title, color = purpleColor , onPress}){
+Widget ourButton({title, color = purpleColor , onPress}){
   return ElevatedButton(
     style: ElevatedButton.styleFrom(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       primary: color,
-      padding: EdgeInsets.all(12)
+      padding: EdgeInsets.all(12.0)
     ),
       onPressed: onPress,
-      child: boldText(text: title, size: 16));
+      child: boldText(text: title, size: 16.0)
+  );
 }

@@ -1,4 +1,5 @@
 import 'package:ecommerce_sneaker/constants/admin/const.dart';
+import 'package:ecommerce_sneaker/widgets/admin/appbar_widget.dart';
 import 'package:ecommerce_sneaker/widgets/admin/dashboard_button.dart';
 import 'package:ecommerce_sneaker/widgets/admin/text_style.dart';
 import 'package:intl/intl.dart' as intl;
@@ -8,19 +9,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        automaticallyImplyLeading: false,
-        title: boldText(text: dashboard, color: darkGrey, size: 16.0),
-        actions: [
-          Center(
-            child: boldText(text: intl.DateFormat('EEE, MMM d, ''yy').format(DateTime.now()),
-                color: purpleColor),
-          ),
-          10.widthBox,
-        ],
-      ),
+      appBar: appbarWidget(dashboard),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
