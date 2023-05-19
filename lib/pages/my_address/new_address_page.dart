@@ -44,10 +44,11 @@ class NewAddressPage extends StatelessWidget {
       body: SafeArea(
         child: GestureDetector(
           onTap: () {
-            FocusScopeNode currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus) {
-              currentFocus.unfocus();
-            }
+            // FocusScopeNode currentFocus = FocusScope.of(context);
+            // if (!currentFocus.hasPrimaryFocus) {
+            //   currentFocus.unfocus();
+            // }
+            FocusManager.instance.primaryFocus?.unfocus();
           },
           child: Container(
               width: Get.width,
@@ -150,24 +151,58 @@ class NewAddressPage extends StatelessWidget {
                     const SizedBox(
                       height: 40,
                     ),
+                    Opacity(
+                      opacity: currentAddress != null ? 1 : 0,
+                      child: SizedBox(
+                        height: 50,
+                        child: Material(
+                          color: Colors.white,
+                          child: InkWell(
+                            onTap: () async {
+                              if(currentAddress != null) {
+                                await addressController.removeAddress(currentAddress!.id!);
+                              }
+                            },
+                            highlightColor: Colors.grey.shade400,
+                            child: const Center(
+                              child: AutoSizeText(
+                                "Remove address",
+                                minFontSize: 16,
+                                style: TextStyle(
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
                     SizedBox(
                       height: 50,
                       child: FractionallySizedBox(
-                        widthFactor: 0.9,
+                        widthFactor: 0.98,
                         child: Obx(
                           () => ElevatedButton(
                             onPressed: addressController.isFormValid.value
                                 ? () async {
                                     FocusScope.of(context).unfocus();
-                                    await addressController.addNewAddress(setDefaultAddress.value);
+                                    if(currentAddress != null) {
+                                      await addressController.updateAddress(setDefaultAddress.value, currentAddress!.id!);
+
+                                    } else {
+                                      await addressController.addNewAddress(setDefaultAddress.value);
+                                    }
                                   }
                                 : null,
                             style: ElevatedButton.styleFrom(
                               shape: const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.zero),
                             ),
-                            child: const AutoSizeText(
-                              "Complete",
+                            child: AutoSizeText(
+                              currentAddress != null ? "Update" : "Complete",
                               minFontSize: 18,
                             ),
                           ),
