@@ -126,7 +126,7 @@ class _ShopScreenState extends State<ShopScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  SearchBar(),
+                  // SearchBar(),
                 ],
               ),
             ),
@@ -204,7 +204,7 @@ class _ShopScreenState extends State<ShopScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                SearchBar(),
+                // SearchBar(),
               ],
             ),
           ),
@@ -265,7 +265,7 @@ class _ShopScreenState extends State<ShopScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                SearchBar(),
+                // SearchBar(),
               ],
             ),
           ),

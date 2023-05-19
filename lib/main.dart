@@ -1,3 +1,4 @@
+import 'package:ecommerce_sneaker/pages/adminPage/homeScreen/home.dart';
 import 'package:ecommerce_sneaker/pages/auth/login_screen.dart';
 import 'package:ecommerce_sneaker/pages/home/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
             return const CircularProgressIndicator();
           }
           if (snapshot.hasData && signInController.isSignedIn.isTrue) {
-            return HomePage();
+            return HomeAdmin();
           } else {
             return LoginScreen(signInController: signInController,);
           }

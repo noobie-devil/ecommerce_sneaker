@@ -1,5 +1,6 @@
 import 'package:ecommerce_sneaker/constants/admin/const.dart';
 import 'package:ecommerce_sneaker/pages/adminPage/homeScreen/ordersScreen/order_detail_screen.dart';
+import 'package:ecommerce_sneaker/service/admin/store_service.dart';
 import 'package:ecommerce_sneaker/widgets/admin/appbar_widget.dart';
 import 'package:ecommerce_sneaker/widgets/admin/dashboard_button.dart';
 import 'package:ecommerce_sneaker/widgets/admin/text_style.dart';
@@ -7,7 +8,8 @@ import 'package:intl/intl.dart' as intl;
 import 'package:get/get.dart';
 
 class ProductDetailScreen extends StatelessWidget {
-  const ProductDetailScreen({Key? key}) : super(key: key);
+  final dynamic data;
+  const ProductDetailScreen({super.key, this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class ProductDetailScreen extends StatelessWidget {
             Get.back();
           },
         ),
-        title: boldText(text: 'Product Detail', size: 16.0, color: fontGrey),
+        title: boldText(text: data['product_name'], size: 16.0, color: fontGrey),
       ),
       
       body: Padding(
@@ -36,8 +38,8 @@ class ProductDetailScreen extends StatelessWidget {
               aspectRatio: 16 / 9,
               viewportFraction: 1.0,
               itemBuilder: (context, index) {
-                return Image.asset(
-                    'assets/shoes_1.png',
+                return Image.network(
+                    data['image_path'],
                   width: double.infinity,
                   fit: BoxFit.cover,
                 );
@@ -49,11 +51,11 @@ class ProductDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  boldText(text: 'Product name', color: fontGrey, size: 16.0),
+                  boldText(text: data['product_name'], color: fontGrey, size: 16.0),
                   10.heightBox,
                   Row(
                     children: [
-                      boldText(text: 'Brand', color: fontGrey, size: 16.0),
+                      boldText(text: "Nike", color: fontGrey, size: 16.0),
 
                     ],
                   ),
@@ -69,7 +71,7 @@ class ProductDetailScreen extends StatelessWidget {
                     size: 25,
                   ),
                   10.heightBox,
-                  boldText(text: '\$300.50', color: red, size: 16.0),
+                  boldText(text: '\$${data['price']}', color: red, size: 16.0),
                   20.heightBox,
 
                   Column(
@@ -114,7 +116,7 @@ class ProductDetailScreen extends StatelessWidget {
 
                   boldText(text: 'Description', color: fontGrey),
                   10.heightBox,
-                  normalText(text: 'Description of this item...', color: fontGrey),
+                  normalText(text: "${data['product_description']}", color: fontGrey),
                 ],
               ),
             )
