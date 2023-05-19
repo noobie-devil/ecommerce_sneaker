@@ -138,6 +138,79 @@ class AddressController extends GetxController {
     super.onClose();
   }
 
+  Future<void> removeAddress(String documentId) async {
+    if(currentUser != null && currentUser!.uid != null) {
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(),
+        )
+      );
+      final documentReference = _fireStore.collection("User").doc(currentUser!.uid).collection("DeliveryAddress").doc(documentId);
+      documentReference.delete().then((value) {
+        Get.back();
+        Get.back();
+        Get.snackbar("Delete Success", "", snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+
+      }, onError: (error) {
+        Get.back();
+        Get.snackbar(
+          "Delete Failed",
+          error.message ?? "Unknown Error",
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
+      });
+    }
+  }
+
+  Future<void> updateAddress(bool setAsDefaultAddress, String documentId) async {
+    final fullName = _fullNameSubject.value;
+    final phoneNumber = _phoneNumberSubject.value;
+    final address = _addressSubject.value;
+    final currentUser = _sharedPreferencesManager.getCurrentUser();
+    final setAsDefault = setAsDefaultAddress;
+    if(currentUser != null && currentUser.uid != null) {
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(),
+        )
+      );
+      final deliveryAddressRef = _fireStore.collection("User").doc(currentUser.uid).collection("DeliveryAddress").doc(documentId);
+      if(setAsDefault) {
+        final snapshot = await _fireStore.collection("User").doc(currentUser.uid).collection('DeliveryAddress').where("is_default", isEqualTo: true).get();
+        final batch = _fireStore.batch();
+        for(final doc in snapshot.docs) {
+          batch.update(doc.reference, {"is_default": false});
+        }
+        await batch.commit();
+      }
+      deliveryAddressRef.update({
+        'full_name': fullName,
+        'phone_number': phoneNumber,
+        'address': address,
+        'is_default': setAsDefault,
+      }).then((_) {
+        Get.back();
+        Get.back();
+        Get.snackbar(
+          "Update Success",
+          "",
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
+      }).catchError((error) {
+        Get.back();
+        Get.snackbar(
+          "Update Failed",
+          error.message ?? "Unknown Error",
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
+      });
+
+    }
+  }
+
   Future<void> addNewAddress(bool setAsDefaultAddress) async {
     final fullName = _fullNameSubject.value;
     final phoneNumber = _phoneNumberSubject.value;

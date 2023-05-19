@@ -206,7 +206,7 @@ class _FastCartState extends State<FastCart> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const CheckoutPage(),
+                              builder: (context) => CheckoutPage(),
                             ));
                       },
                       style: ElevatedButton.styleFrom(

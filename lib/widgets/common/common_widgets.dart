@@ -62,7 +62,7 @@ TextFormField secondaryTextFormField(String text, String? initialValue, TextInpu
             borderSide: BorderSide(color: Colors.grey)),
         errorBorder: const UnderlineInputBorder(
             borderSide: BorderSide(color: Colors.grey)),
-        errorText: snapshot.hasError && snapshot.error.toString().isNotEmpty
+        errorText: snapshot.hasError && snapshot.error.toString().trim().isNotEmpty
             ? snapshot.error.toString()
             : null),
     keyboardType: inputType,

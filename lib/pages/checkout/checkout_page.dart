@@ -1,13 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_sneaker/constants/fonts.dart';
+import 'package:ecommerce_sneaker/controllers/checkout_controller.dart';
 import 'package:ecommerce_sneaker/pages/my_address/my_address_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
 class CheckoutPage extends StatelessWidget {
-  const CheckoutPage({Key? key}) : super(key: key);
+  CheckoutPage({Key? key}) : super(key: key);
+
+  final CheckoutController checkoutController = Get.put(CheckoutController());
 
   @override
   Widget build(BuildContext context) {
@@ -100,17 +103,19 @@ class CheckoutPage extends StatelessWidget {
                                                     fontSize: 14),
                                               ),
                                             ),
-                                            const Text(
-                                              "Nguyen van A | 0909784971",
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontSize: 14),
+                                            Obx(() => Text(
+                                                "${checkoutController.defaultAddress.value?.fullName} | ${checkoutController.defaultAddress.value?.phoneNumber}",
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(fontSize: 14),
+                                              ),
                                             ),
-                                            const Text(
-                                              "1 Vo van Ngan, Thanh pho Thu Duc as sad a asd  sad  sad sad asds  s da d as asd asd a",
-                                              maxLines: 3,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontSize: 14),
+                                            Obx(() => Text(
+                                                "${checkoutController.defaultAddress.value?.address}",
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(fontSize: 14),
+                                              ),
                                             )
                                           ],
                                         ),
