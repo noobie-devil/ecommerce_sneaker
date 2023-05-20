@@ -7,6 +7,7 @@ import 'package:ecommerce_sneaker/widgets/admin/text_style.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:get/get.dart';
 
+import '../../../../utils.dart';
 import '../shopScreen/shop_settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -28,7 +29,10 @@ class ProfileScreen extends StatelessWidget {
               },
               icon: const Icon(Icons.edit)
           ),
-          TextButton(onPressed:  (){}, child: normalText(text: logout))
+          TextButton(onPressed:  () async {
+            await signOut();
+
+          }, child: normalText(text: logout))
         ],
       ),
       body: Column(

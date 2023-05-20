@@ -150,19 +150,22 @@ class User {
   final String? uid;
   final String username;
   final String email;
+  final String role;
 
-  User(this.uid, this.username, this.email);
+  User(this.uid, this.username, this.email, this.role);
 
   User.fromSnapshot(DocumentSnapshot snapshot)
       : uid = snapshot.id,
         username = snapshot.get('username'),
-        email = snapshot.get('email');
+        email = snapshot.get('email'),
+        role = snapshot.get('role');
 
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
       'username': username,
       'email': email,
+      'role': role
     };
   }
 
@@ -171,6 +174,7 @@ class User {
       json['uid'],
       json['username'],
       json['email'],
+      json['role']
     );
   }
 }

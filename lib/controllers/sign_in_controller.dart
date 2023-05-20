@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce_sneaker/pages/adminPage/homeScreen/home.dart';
 import 'package:ecommerce_sneaker/shared_preferences_manager.dart';
 import 'package:ecommerce_sneaker/models/models.dart' as model;
 import 'package:ecommerce_sneaker/pages/home/home_page.dart';
@@ -99,7 +100,11 @@ class SignInController extends GetxController {
         if(saveResult) {
           print("back");
           Get.back();
-          Get.offAll(() => HomePage());
+          if(user.role == 'admin') {
+            Get.offAll(() => const HomeAdmin());
+          } else {
+            Get.offAll(() => HomePage());
+          }
           isSignedIn.value = true;
         } else {
           signOut();
