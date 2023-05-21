@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../constants/fonts.dart';
+import '../../controllers/checkout_controller.dart';
 import '../../models/models.dart';
 
 class FastCart extends StatefulWidget {
@@ -203,11 +204,17 @@ class _FastCartState extends State<FastCart> {
                         vertical: 20, horizontal: 50),
                     child: ElevatedButton(
                       onPressed: () {
+                        List<CartProduct> listItemSelected = cartController.cartCheckedItem;
+                        for(CartProduct cartProduct in listItemSelected) {
+                          print(cartProduct.toJson().toString());
+                        }
+                        CheckoutController checkoutController = Get.put(CheckoutController());
+                        checkoutController.setCartProductNeedCheckout(listItemSelected);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CheckoutPage(),
-                            ));
+                              builder: (context) => CheckoutPage(checkoutController: checkoutController,),
+                            )).then((value) => checkoutController.refreshCartProduct());
                       },
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

@@ -144,6 +144,9 @@ class DeliveryAddress {
         phoneNumber = snapshot.get("phone_number"),
         address = snapshot.get('address'),
         isDefaultAddress = snapshot.get("is_default");
+
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'full_name': fullName, 'phoneNumber': phoneNumber, 'address': address, 'is_default': isDefaultAddress};
 }
 
 class User {

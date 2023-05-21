@@ -11,9 +11,10 @@ class CheckoutController extends GetxController {
   late final SharedPreferencesManager _sharedPreferencesManager;
   late final User? currentUser;
   late StreamSubscription<QuerySnapshot<Map<String, dynamic>>> listener;
-  final Rx<DeliveryAddress?> defaultAddress = null.obs;
-
-
+  final RxList<DeliveryAddress> defaultAddresses = RxList([]);
+  final RxList<CartProduct> cartProductNeedCheckout = RxList([]);
+  final RxList<Product> productInCheckoutList = RxList([]);
+  final RxDouble totalPayment = RxDouble(0);
 
   @override
   Future<void> onInit() async {
@@ -25,6 +26,14 @@ class CheckoutController extends GetxController {
     super.onInit();
   }
 
+  setCartProductNeedCheckout(List<CartProduct> list) {
+    cartProductNeedCheckout.assignAll(list);
+  }
+
+  refreshCartProduct() {
+    cartProductNeedCheckout.clear();
+  }
+
   Future<void> initListener(String? documentId) async {
     listener = _fireStore
         .collection("User")
@@ -32,15 +41,11 @@ class CheckoutController extends GetxController {
         .collection("DeliveryAddress")
         .where("is_default", isEqualTo: true)
         .snapshots()
-        .listen((event) {
-      if(event.docs.isNotEmpty) {
-        print(event.docs.first.toString());
-        print(event.docs.length);
-        final DeliveryAddress? deliveryAddress = DeliveryAddress.fromSnapshot(event.docs.first);
-        defaultAddress.value = deliveryAddress;
-        print(deliveryAddress.toString());
-      } else {
-        defaultAddress.value = null;
+        .listen((snapshot) {
+      if(snapshot.docs.isNotEmpty) {
+        // List<DeliveryAddress> addresses = [];
+        // addresses.assignAll(snapshot.docs.map((e) => DeliveryAddress.fromSnapshot(e)).toList());
+        defaultAddresses.assignAll(snapshot.docs.map((e) => DeliveryAddress.fromSnapshot(e)).toList());
       }
     });
   }

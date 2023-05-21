@@ -1,16 +1,22 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerce_sneaker/constants/admin/const.dart';
 import 'package:ecommerce_sneaker/constants/fonts.dart';
 import 'package:ecommerce_sneaker/controllers/checkout_controller.dart';
+import 'package:ecommerce_sneaker/controllers/product_controller.dart';
 import 'package:ecommerce_sneaker/pages/my_address/my_address_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 
-class CheckoutPage extends StatelessWidget {
-  CheckoutPage({Key? key}) : super(key: key);
+import '../../models/models.dart';
 
-  final CheckoutController checkoutController = Get.put(CheckoutController());
+class CheckoutPage extends StatelessWidget {
+  CheckoutPage({Key? key, required this.checkoutController})
+      : super(key: key);
+
+  final CheckoutController checkoutController;
+  final ProductController productController = Get.put(ProductController());
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +47,10 @@ class CheckoutPage extends StatelessWidget {
         body: SafeArea(
           child: Stack(
             children: [
-              SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
+              CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Container(
                       margin: const EdgeInsets.only(top: 5),
                       child: Ink(
                         decoration: BoxDecoration(
@@ -63,10 +68,8 @@ class CheckoutPage extends StatelessWidget {
                             Navigator.push(
                                 context,
                                 PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: MyAddressPage()
-                                )
-                            );
+                                    type: PageTransitionType.rightToLeft,
+                                    child: MyAddressPage()));
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 15.0),
@@ -103,20 +106,60 @@ class CheckoutPage extends StatelessWidget {
                                                     fontSize: 14),
                                               ),
                                             ),
-                                            Obx(() => Text(
-                                                "${checkoutController.defaultAddress.value?.fullName} | ${checkoutController.defaultAddress.value?.phoneNumber}",
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(fontSize: 14),
-                                              ),
-                                            ),
-                                            Obx(() => Text(
-                                                "${checkoutController.defaultAddress.value?.address}",
-                                                maxLines: 3,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(fontSize: 14),
-                                              ),
-                                            )
+                                            Obx(() {
+                                              if (checkoutController
+                                                  .defaultAddresses
+                                                  .isNotEmpty) {
+                                                DeliveryAddress address =
+                                                    checkoutController
+                                                        .defaultAddresses
+                                                        .elementAt(0);
+                                                return Text(
+                                                  "${address.fullName} | ${address.phoneNumber}",
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                );
+                                              } else {
+                                                return const Text(
+                                                  "Empty info",
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                );
+                                              }
+                                            }),
+                                            Obx(() {
+                                              if (checkoutController
+                                                  .defaultAddresses
+                                                  .isNotEmpty) {
+                                                DeliveryAddress address =
+                                                    checkoutController
+                                                        .defaultAddresses
+                                                        .elementAt(0);
+                                                return Text(
+                                                  address.address,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                );
+                                              } else {
+                                                return const Text(
+                                                  "Please add new delivery address for order.",
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                );
+                                              }
+                                            }),
                                           ],
                                         ),
                                       ),
@@ -137,183 +180,443 @@ class CheckoutPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 4, bottom: 4),
-                      height: Get.height * 0.15,
-                      decoration: BoxDecoration(color: Colors.grey.shade300),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: CachedNetworkImage(
-                                  imageUrl:
-                                      "https://sneakerdaily.vn/wp-content/uploads/2021/04/Giay-nam-Puma-Suede-Classic-Castor-%E2%80%98Gray-365347-05.jpg.webp"),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 7,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const AutoSizeText(
-                                  "Giày nam Puma Suede Classic Castor ‘Gray’ 365347-05",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  minFontSize: 16,
-                                ),
-                                AutoSizeText(
-                                  "Brand: Puma",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  minFontSize: 14,
-                                  style: TextStyle(color: Colors.grey.shade800),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: const [
-                                    AutoSizeText(
-                                      "\$100.1",
-                                      minFontSize: 16,
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final item = checkoutController.cartProductNeedCheckout.elementAt(index);
+                      return FutureBuilder<Product?>(
+                        future: productController.getProductById(item.productId),
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData) {
+                            final product = snapshot.data!;
+                            return Container(
+                              margin: const EdgeInsets.only(top: 4, bottom: 4),
+                              height: Get.height * 0.15,
+                              decoration: BoxDecoration(color: Colors.grey.shade300),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: CachedNetworkImage(
+                                          imageUrl: product.imagePath),
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: AutoSizeText(
-                                        "x2",
+                                  ),
+                                  Expanded(
+                                    flex: 7,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        AutoSizeText(
+                                          product.productName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          minFontSize: 16,
+                                        ),
+                                        AutoSizeText(
+                                          "Brand: ${product.brand.brandName}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          minFontSize: 14,
+                                          style:
+                                          TextStyle(color: Colors.grey.shade800),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                          children: [
+                                            AutoSizeText(
+                                              "\$${product.price}",
+                                              minFontSize: 16,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 8.0),
+                                              child: AutoSizeText(
+                                                "x${item.quantity.toString()}",
+                                                minFontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          } else {
+                            return const SizedBox(
+                                height: 150,
+                                width: double.infinity,
+                                child: Center(child: CircularProgressIndicator(),));
+                          }
+                        },
+                      );
+                      return Container(
+                        margin: const EdgeInsets.only(top: 4, bottom: 4),
+                        height: Get.height * 0.15,
+                        decoration: BoxDecoration(color: Colors.grey.shade300),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: CachedNetworkImage(
+                                    imageUrl:
+                                        "https://sneakerdaily.vn/wp-content/uploads/2021/04/Giay-nam-Puma-Suede-Classic-Castor-%E2%80%98Gray-365347-05.jpg.webp"),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 7,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const AutoSizeText(
+                                    "Giày nam Puma Suede Classic Castor ‘Gray’ 365347-05",
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    minFontSize: 16,
+                                  ),
+                                  AutoSizeText(
+                                    "Brand: Puma",
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    minFontSize: 14,
+                                    style:
+                                        TextStyle(color: Colors.grey.shade800),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: const [
+                                      AutoSizeText(
+                                        "\$100.1",
                                         minFontSize: 16,
                                       ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 4, bottom: 4),
-                      height: Get.height * 0.15,
-                      decoration: BoxDecoration(color: Colors.grey.shade300),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: CachedNetworkImage(
-                                  imageUrl:
-                                      "https://sneakerdaily.vn/wp-content/uploads/2021/04/Giay-nam-Puma-Suede-Classic-Castor-%E2%80%98Gray-365347-05.jpg.webp"),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 7,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const AutoSizeText(
-                                  "Giày nam Puma Suede Classic Castor ‘Gray’ 365347-05",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  minFontSize: 16,
-                                ),
-                                AutoSizeText(
-                                  "Brand: Puma",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  minFontSize: 14,
-                                  style: TextStyle(color: Colors.grey.shade800),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: const [
-                                    AutoSizeText(
-                                      "\$100.1",
-                                      minFontSize: 16,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: AutoSizeText(
-                                        "x2",
-                                        minFontSize: 16,
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 8.0),
+                                        child: AutoSizeText(
+                                          "x2",
+                                          minFontSize: 16,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 4, bottom: 4),
-                      height: Get.height * 0.15,
-                      decoration: BoxDecoration(color: Colors.grey.shade300),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: CachedNetworkImage(
-                                  imageUrl:
-                                      "https://sneakerdaily.vn/wp-content/uploads/2021/04/Giay-nam-Puma-Suede-Classic-Castor-%E2%80%98Gray-365347-05.jpg.webp"),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 7,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                const AutoSizeText(
-                                  "Giày nam Puma Suede Classic Castor ‘Gray’ 365347-05",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  minFontSize: 16,
-                                ),
-                                AutoSizeText(
-                                  "Brand: Puma",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  minFontSize: 14,
-                                  style: TextStyle(color: Colors.grey.shade800),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: const [
-                                    AutoSizeText(
-                                      "\$100.1",
-                                      minFontSize: 16,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
-                                      child: AutoSizeText(
-                                        "x2",
-                                        minFontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }, childCount: checkoutController.cartProductNeedCheckout.length),
+                  )
+                ],
               ),
+              // SingleChildScrollView(
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.stretch,
+              //     children: [
+              //       Container(
+              //         margin: const EdgeInsets.only(top: 5),
+              //         child: Ink(
+              //           decoration: BoxDecoration(
+              //               color: Colors.grey.shade200,
+              //               boxShadow: [
+              //                 BoxShadow(
+              //                     color: Colors.grey.shade800, blurRadius: 5),
+              //                 const BoxShadow(
+              //                     color: Colors.white,
+              //                     blurRadius: 5,
+              //                     offset: Offset(0, 5))
+              //               ]),
+              //           child: InkWell(
+              //             onTap: () {
+              //               Navigator.push(
+              //                   context,
+              //                   PageTransition(
+              //                     type: PageTransitionType.rightToLeft,
+              //                     child: MyAddressPage()
+              //                   )
+              //               );
+              //             },
+              //             child: Padding(
+              //               padding: const EdgeInsets.only(bottom: 15.0),
+              //               child: CustomPaint(
+              //                 painter: DashedLinePainter(),
+              //                 child: Padding(
+              //                   padding: const EdgeInsets.only(bottom: 10.0),
+              //                   child: ListTile(
+              //                     leading: const Icon(
+              //                       Icons.location_on_outlined,
+              //                       size: 25,
+              //                       color: Colors.blueGrey,
+              //                     ),
+              //                     title: Row(
+              //                       mainAxisAlignment:
+              //                           MainAxisAlignment.spaceBetween,
+              //                       children: [
+              //                         Expanded(
+              //                           flex: 10,
+              //                           child: Column(
+              //                             crossAxisAlignment:
+              //                                 CrossAxisAlignment.stretch,
+              //                             children: [
+              //                               Padding(
+              //                                 padding:
+              //                                     const EdgeInsets.symmetric(
+              //                                         vertical: 8.0),
+              //                                 child: Text(
+              //                                   "Delivery Address",
+              //                                   style: TextStyle(
+              //                                       fontWeight: FontWeight.w400,
+              //                                       color: Colors
+              //                                           .blueGrey.shade800,
+              //                                       fontSize: 14),
+              //                                 ),
+              //                               ),
+              //                               Obx(() {
+              //                                 if(checkoutController.defaultAddresses.isNotEmpty) {
+              //                                   DeliveryAddress address = checkoutController.defaultAddresses.elementAt(0);
+              //                                   return Text(
+              //                                     "${address.fullName} | ${address.phoneNumber}",
+              //                                     maxLines: 1,
+              //                                     overflow: TextOverflow.ellipsis,
+              //                                     style: const TextStyle(fontSize: 14),
+              //                                   );
+              //                                 } else {
+              //                                   return const Text(
+              //                                     "Empty info",
+              //                                     maxLines: 1,
+              //                                     overflow: TextOverflow.ellipsis,
+              //                                     style: TextStyle(fontSize: 14),
+              //                                   );
+              //                                 }
+              //                               }),
+              //                               Obx(() {
+              //                                 if(checkoutController.defaultAddresses.isNotEmpty) {
+              //                                   DeliveryAddress address = checkoutController.defaultAddresses.elementAt(0);
+              //                                   return Text(
+              //                                     address.address,
+              //                                     maxLines: 3,
+              //                                     overflow: TextOverflow.ellipsis,
+              //                                     style: const TextStyle(fontSize: 14),
+              //                                   );
+              //                                 } else {
+              //                                   return const Text(
+              //                                     "Please add new delivery address for order.",
+              //                                     maxLines: 3,
+              //                                     overflow: TextOverflow.ellipsis,
+              //                                     style: TextStyle(fontSize: 14),
+              //                                   );
+              //                                 }
+              //                               }),
+              //                             ],
+              //                           ),
+              //                         ),
+              //                         Expanded(
+              //                           flex: 1,
+              //                           child: Container(
+              //                               padding:
+              //                                   const EdgeInsets.only(left: 10),
+              //                               child: const Icon(
+              //                                   Icons.chevron_right_outlined)),
+              //                         )
+              //                       ],
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //       Container(
+              //         margin: const EdgeInsets.only(top: 4, bottom: 4),
+              //         height: Get.height * 0.15,
+              //         decoration: BoxDecoration(color: Colors.grey.shade300),
+              //         child: Row(
+              //           children: [
+              //             Expanded(
+              //               flex: 3,
+              //               child: Padding(
+              //                 padding: const EdgeInsets.all(10.0),
+              //                 child: CachedNetworkImage(
+              //                     imageUrl:
+              //                         "https://sneakerdaily.vn/wp-content/uploads/2021/04/Giay-nam-Puma-Suede-Classic-Castor-%E2%80%98Gray-365347-05.jpg.webp"),
+              //               ),
+              //             ),
+              //             Expanded(
+              //               flex: 7,
+              //               child: Column(
+              //                 crossAxisAlignment: CrossAxisAlignment.stretch,
+              //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //                 children: [
+              //                   const AutoSizeText(
+              //                     "Giày nam Puma Suede Classic Castor ‘Gray’ 365347-05",
+              //                     maxLines: 1,
+              //                     overflow: TextOverflow.ellipsis,
+              //                     minFontSize: 16,
+              //                   ),
+              //                   AutoSizeText(
+              //                     "Brand: Puma",
+              //                     maxLines: 1,
+              //                     overflow: TextOverflow.ellipsis,
+              //                     minFontSize: 14,
+              //                     style: TextStyle(color: Colors.grey.shade800),
+              //                   ),
+              //                   Row(
+              //                     mainAxisAlignment:
+              //                         MainAxisAlignment.spaceBetween,
+              //                     crossAxisAlignment: CrossAxisAlignment.center,
+              //                     children: const [
+              //                       AutoSizeText(
+              //                         "\$100.1",
+              //                         minFontSize: 16,
+              //                       ),
+              //                       Padding(
+              //                         padding: EdgeInsets.only(right: 8.0),
+              //                         child: AutoSizeText(
+              //                           "x2",
+              //                           minFontSize: 16,
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   )
+              //                 ],
+              //               ),
+              //             )
+              //           ],
+              //         ),
+              //       ),
+              //       Container(
+              //         margin: const EdgeInsets.only(top: 4, bottom: 4),
+              //         height: Get.height * 0.15,
+              //         decoration: BoxDecoration(color: Colors.grey.shade300),
+              //         child: Row(
+              //           children: [
+              //             Expanded(
+              //               flex: 3,
+              //               child: Padding(
+              //                 padding: const EdgeInsets.all(10.0),
+              //                 child: CachedNetworkImage(
+              //                     imageUrl:
+              //                         "https://sneakerdaily.vn/wp-content/uploads/2021/04/Giay-nam-Puma-Suede-Classic-Castor-%E2%80%98Gray-365347-05.jpg.webp"),
+              //               ),
+              //             ),
+              //             Expanded(
+              //               flex: 7,
+              //               child: Column(
+              //                 crossAxisAlignment: CrossAxisAlignment.stretch,
+              //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //                 children: [
+              //                   const AutoSizeText(
+              //                     "Giày nam Puma Suede Classic Castor ‘Gray’ 365347-05",
+              //                     maxLines: 1,
+              //                     overflow: TextOverflow.ellipsis,
+              //                     minFontSize: 16,
+              //                   ),
+              //                   AutoSizeText(
+              //                     "Brand: Puma",
+              //                     maxLines: 1,
+              //                     overflow: TextOverflow.ellipsis,
+              //                     minFontSize: 14,
+              //                     style: TextStyle(color: Colors.grey.shade800),
+              //                   ),
+              //                   Row(
+              //                     mainAxisAlignment:
+              //                         MainAxisAlignment.spaceBetween,
+              //                     crossAxisAlignment: CrossAxisAlignment.center,
+              //                     children: const [
+              //                       AutoSizeText(
+              //                         "\$100.1",
+              //                         minFontSize: 16,
+              //                       ),
+              //                       Padding(
+              //                         padding: EdgeInsets.only(right: 8.0),
+              //                         child: AutoSizeText(
+              //                           "x2",
+              //                           minFontSize: 16,
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   )
+              //                 ],
+              //               ),
+              //             )
+              //           ],
+              //         ),
+              //       ),
+              //       Container(
+              //         margin: const EdgeInsets.only(top: 4, bottom: 4),
+              //         height: Get.height * 0.15,
+              //         decoration: BoxDecoration(color: Colors.grey.shade300),
+              //         child: Row(
+              //           children: [
+              //             Expanded(
+              //               flex: 3,
+              //               child: Padding(
+              //                 padding: const EdgeInsets.all(10.0),
+              //                 child: CachedNetworkImage(
+              //                     imageUrl:
+              //                         "https://sneakerdaily.vn/wp-content/uploads/2021/04/Giay-nam-Puma-Suede-Classic-Castor-%E2%80%98Gray-365347-05.jpg.webp"),
+              //               ),
+              //             ),
+              //             Expanded(
+              //               flex: 7,
+              //               child: Column(
+              //                 crossAxisAlignment: CrossAxisAlignment.stretch,
+              //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //                 children: [
+              //                   const AutoSizeText(
+              //                     "Giày nam Puma Suede Classic Castor ‘Gray’ 365347-05",
+              //                     maxLines: 1,
+              //                     overflow: TextOverflow.ellipsis,
+              //                     minFontSize: 16,
+              //                   ),
+              //                   AutoSizeText(
+              //                     "Brand: Puma",
+              //                     maxLines: 1,
+              //                     overflow: TextOverflow.ellipsis,
+              //                     minFontSize: 14,
+              //                     style: TextStyle(color: Colors.grey.shade800),
+              //                   ),
+              //                   Row(
+              //                     mainAxisAlignment:
+              //                         MainAxisAlignment.spaceBetween,
+              //                     crossAxisAlignment: CrossAxisAlignment.center,
+              //                     children: const [
+              //                       AutoSizeText(
+              //                         "\$100.1",
+              //                         minFontSize: 16,
+              //                       ),
+              //                       Padding(
+              //                         padding: EdgeInsets.only(right: 8.0),
+              //                         child: AutoSizeText(
+              //                           "x2",
+              //                           minFontSize: 16,
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   )
+              //                 ],
+              //               ),
+              //             )
+              //           ],
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Positioned(
                 child: Align(
                   alignment: Alignment.bottomCenter,
